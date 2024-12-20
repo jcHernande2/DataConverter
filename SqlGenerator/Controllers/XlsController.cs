@@ -1,9 +1,16 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using Microsoft.AspNetCore.Http.Features;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.ComponentModel.DataAnnotations;
+using SqlGenerator.Models;
+using System.IO;
 
 namespace SqlGenerator.Controllers
 {
+    
     public class XlsController : Controller
     {
         // GET: XlsController
@@ -15,41 +22,23 @@ namespace SqlGenerator.Controllers
         // GET: XlsController/sql
         [HttpGet]
         [Route("XlsController/sql")]
-        public ActionResult GetSql()
+        public ActionResult GetSql([FromForm] FileData file)
         {
             try
             {
-                var request = HttpContext.Request;
-                // Check if the request contains multipart/form-data.
-               /* if (!Request.HttpContext.Content.IsMimeMultipartContent())
+                var bytes = new byte[0];
+                using (var ms = new MemoryStream())
                 {
-                    throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                    file.XlsFile.CopyTo(ms);
+                    bytes = ms.ToArray();
                 }
 
-                string root = HttpContext.Current.Server.MapPath("~/App_Data");
-                var provider = new MultipartFormDataStreamProvider(root);
-
-                try
-                {
-                    // Read the form data.
-                    await Request.Content.ReadAsMultipartAsync(provider);
-
-                    // This illustrates how to get the file names.
-                    foreach (MultipartFileData file in provider.FileData)
-                    {
-                        Trace.WriteLine(file.Headers.ContentDisposition.FileName);
-                        Trace.WriteLine("Server file path: " + file.LocalFileName);
-                    }
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-                catch (System.Exception e)
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
-                }
-                }*/
+               HttpResponseMessage msg = new HttpResponseMessage(HttpStatusCode.Accepted);
                 return this.Ok("");
             }
-            catch {
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
                 return this.BadRequest();
             }
         }
