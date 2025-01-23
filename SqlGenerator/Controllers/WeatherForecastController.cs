@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace SqlGenerator.Controllers
+namespace DataConverter.Controllers
 {
     [ApiController]
     [Route("[controller]")]

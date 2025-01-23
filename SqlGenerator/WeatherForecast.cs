@@ -1,4 +1,4 @@
-namespace SqlGenerator
+namespace DataConverter
 {
     public class WeatherForecast
     {

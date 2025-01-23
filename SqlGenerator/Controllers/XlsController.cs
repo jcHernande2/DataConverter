@@ -5,10 +5,10 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
-using SqlGenerator.Models;
+using DataConverter.Models;
 using System.IO;
 
-namespace SqlGenerator.Controllers
+namespace DataConverter.Controllers
 {
     
     public class XlsController : Controller

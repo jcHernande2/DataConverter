@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SqlGenerator.Models
+namespace DataConverter.Models
 {
     public class FileData
     {
