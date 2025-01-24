@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
 using DataConverter.Models;
 using System.IO;
-using ExcelDataReader;
+using DataConverter.BusinessLogic.Parser;
 
 namespace DataConverter.Controllers
 {
@@ -27,43 +27,23 @@ namespace DataConverter.Controllers
         {
             try
             {
-                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-                var bytes = new byte[0];
-                using (var ms = new MemoryStream())
+               var reader =new ReaderXls();
+                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql(file));
+
+                var metadata = new
                 {
-                    file.XlsFile.CopyTo(ms);
-                    bytes = ms.ToArray();
-                    using (MemoryStream streamWrite = new MemoryStream())
-                    {
-                        
-                            using (var reader = ExcelReaderFactory.CreateReader(ms))
-                            {
-                                //conexion.Open();
-                                string update = string.Empty;
-                                string insert = string.Empty;
-                                StreamWriter sw = new StreamWriter(streamWrite);
-                                do
-                                {
-                                    int row = 0;
-                                    string FieldIn = string.Empty;
-                                    while (reader.Read()) //Each ROW
-                                    {
-                                        if (reader.Name.Trim() == file.Sheet)
-                                        {
-                                            sw.WriteLine($"INSERT INTO");
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                } while (reader.NextResult());
-                            }
-                        
-                    }
-                }
-                HttpResponseMessage msg = new HttpResponseMessage(HttpStatusCode.Accepted);
-                return this.Ok(new { });
+                    NombreArchivo = "script.sql",
+                    Tipo = "Texto plano",
+                    FechaGeneracion = DateTime.Now
+                };
+
+                var response = new
+                {
+                    Archivo = Convert.ToBase64String(fileBytes),
+                    Metadata = metadata
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
