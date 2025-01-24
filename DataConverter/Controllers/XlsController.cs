@@ -5,13 +5,13 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
-using DataConverter.Models;
 using System.IO;
 using DataConverter.BusinessLogic.Parser;
+using DataConverter.Models.Request;
 
 namespace DataConverter.Controllers
 {
-    
+
     public class XlsController : Controller
     {
         // GET: XlsController

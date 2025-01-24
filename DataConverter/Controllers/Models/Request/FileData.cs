@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DataConverter.Models
+namespace DataConverter.Models.Request
 {
     public class FileData
     {

@@ -1,4 +1,4 @@
-﻿using DataConverter.Models;
+﻿using DataConverter.Models.Request;
 using ExcelDataReader;
 
 namespace DataConverter.BusinessLogic.Parser
