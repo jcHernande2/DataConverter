@@ -4,7 +4,7 @@ namespace DataConverter.Models
 {
     public class FileData
     {
-        public string Campo { get; set; }
+        public string Sheet { get; set; }
 
         [Required]
         public IFormFile XlsFile { get; set; }
