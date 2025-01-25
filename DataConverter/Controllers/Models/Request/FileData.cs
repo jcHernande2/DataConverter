@@ -4,11 +4,11 @@ namespace DataConverter.Models.Request
 {
     public class FileData
     {
-        public string Sheet { get; set; }
 
         [Required]
         public IFormFile XlsFile { get; set; }
 
+        [Required]
         public IFormFile JsonFile { get; set; }
     }
 }

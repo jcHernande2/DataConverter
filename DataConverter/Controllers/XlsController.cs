@@ -1,11 +1,5 @@
-﻿using System.Diagnostics;
-using System.Net;
-using Microsoft.AspNetCore.Http.Features;
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 using DataConverter.BusinessLogic.Parser;
 using DataConverter.Models.Request;
 
@@ -22,13 +16,13 @@ namespace DataConverter.Controllers
 
         // GET: XlsController/sql
         [HttpGet]
-        [Route("XlsController/sql")]
+        [Route("XlsController/Base64")]
         public ActionResult GetSql([FromForm] FileData file)
         {
             try
             {
-               var reader =new ReaderXls();
-                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql(file));
+               var reader =new ReaderXls(file);
+                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql());
 
                 var metadata = new
                 {
@@ -44,6 +38,23 @@ namespace DataConverter.Controllers
                 };
 
                 return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.BadRequest();
+            }
+        }
+        // GET: XlsController/text
+        [HttpGet]
+        [Route("XlsController/text")]
+        public ActionResult GetText([FromForm] FileData file)
+        {
+            try
+            {
+                var reader = new ReaderXls(file);
+                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql());
+                return File(fileBytes, "text/plain", "script.sql");
             }
             catch (Exception e)
             {

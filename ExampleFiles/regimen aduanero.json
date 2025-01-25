@@ -1,0 +1,13 @@
+{
+    "Sheet":"c_RegimenAduanero",
+    "StartRow":4,
+    "NameTable":"c_RegimenAduanero",
+    "FieldRelationship":
+    { 
+        "Clave":0,
+        "Descripcion":1,
+        "ImpoExpo":2,
+        "FechaInicioVigencia":3,
+        "FechaFinVigencia":4
+    }
+}
