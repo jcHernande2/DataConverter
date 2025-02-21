@@ -8,18 +8,6 @@
 
         public string NameTable {get; set;}
 
-        public FieldRelationship FieldRelationship { get; set; }
-    }
-    public class FieldRelationship
-    {
-        public int Clave { get; set; }
-
-        public int Descripcion { get; set; }
-
-        public int ImpoExpo { get; set; }
-
-        public int FechaInicioVigencia { get; set; }
-
-        public int FechaFinVigencia { get; set; }
+        public Dictionary<string, int> FieldNames { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using DataConverter.BusinessLogic.Models;
 using DataConverter.Models.Request;
 using ExcelDataReader;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DataConverter.BusinessLogic.Parser
 {
@@ -28,7 +27,6 @@ namespace DataConverter.BusinessLogic.Parser
                 file.XlsFile.CopyTo(ms);
                 var json = JsonSerializer.Deserialize<FieldConfig>(this.MemoryStreamToText(msjson));
                 
-
                 using (var reader = ExcelReaderFactory.CreateReader(ms))
                 {
                     do
@@ -39,33 +37,27 @@ namespace DataConverter.BusinessLogic.Parser
                         {
                             if (reader.Name.Trim() == json.Sheet)
                             {
-                                var field0 = reader.GetValue(0) ?? "";
-                                var field1 = reader.GetValue(1) ?? "";
-                                var field2 = reader.GetValue(2) ?? "";
-                                var field3 = reader.GetValue(3) ?? "";
-                                var field4 = reader.GetValue(4) ?? "";
-                               
-                                if (row > 4 && !string.IsNullOrEmpty(field0?.ToString()) && !string.IsNullOrEmpty(field1?.ToString()))
+                                Dictionary<string, string> fieldValues = new Dictionary<string, string>();
+                                foreach (var field in json.FieldNames)
                                 {
-                                    field0 = Regex.Replace(field0.ToString(), @"\r\n?|\n", "").Trim();
-                                    field0 = field0.ToString().Replace('"', '“').Trim();
-                                    field0 = field0.ToString().Replace("'", "“").Trim();
-                                    field1 = Regex.Replace(field1.ToString(), @"\r\n?|\n", "").Trim();
-                                    field1 = field1.ToString().Replace('"', '“').Trim();
-                                    field1 = field1.ToString().Replace("'", "“").Trim();
-                                    field2 = Regex.Replace(field2.ToString(), @"\r\n?|\n", "").Trim();
-                                    field2 = field2.ToString().Replace('"', '“').Trim();
-                                    field2 = field2.ToString().Replace("'", "\"").Trim();
-                                    field3 = Regex.Replace(field3.ToString(), @"\r\n?|\n", "").Trim();
-                                    field3 = field3.ToString().Replace('"', '“').Trim();
-                                    field3 = field3.ToString().Replace("'", "“").Trim();
-                                    field4 = Regex.Replace(field4.ToString(), @"\r\n?|\n", "").Trim();
-                                    field4 = field4.ToString().Replace('"', '“').Trim();
-                                    field4 = field4.ToString().Replace("'", "“").Trim();
+                                    var value = reader?.GetValue(field.Value).ToString() ?? "";
+                                    value = Regex.Replace(value.ToString(), @"\r\n?|\n", "").Trim();
+                                    value = value.ToString().Replace('"', '“').Trim();
+                                    value = value.ToString().Replace("'", "“").Trim();
+                                    value = !string.IsNullOrEmpty(value) ? $"'{value}'" : "NULL";
+                                    fieldValues.Add(field.Key, value);
                                    
-
-                                    //field5 = !string.IsNullOrEmpty(field5.ToString()) ? $"'{field5}'" : "NULL";
-                                    contenido = contenido + $"INSERT INTO [dbo].[c_NumPedimentoAduana]([c_Aduana],[Patente],[Ejercicio],[Cantidad],[FechaInicio],[FechaFin]) values('{field0}','{field1}','{field2}','{field3}','{field4}');\n";
+                                }
+                                if (row > json.StartRow && fieldValues.Count()>0)
+                                {
+                                    var values=string.Empty;
+                                    var fields = string.Empty;
+                                    foreach (var value in fieldValues)
+                                    {
+                                        values.Concat(!string.IsNullOrEmpty(values) ? $",'{value.Value}'" : $"'{value.Value}'");
+                                        fields.Concat(!string.IsNullOrEmpty(fields) ? $",[{value.Key}]" :$"[{value.Key}]");
+                                    }
+                                    contenido = contenido + $"INSERT INTO [dbo].[{json.NameTable}]({fields}) values({values});\n";
                                 }
                                 row++;
                                 
