@@ -8,5 +8,6 @@
         "ImpoExpo": 2,
         "FechaInicioVigencia":3,
         "FechaFinVigencia":4,
-    }
+    },
+    "Operation":"Insert",
 }
