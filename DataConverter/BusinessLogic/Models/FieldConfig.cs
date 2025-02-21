@@ -9,5 +9,9 @@
         public string NameTable {get; set;}
 
         public Dictionary<string, int> FieldNames { get; set; }
+
+        public string FieldWhere { get; set; }
+
+        public List<string> FieldsToUpdate { get; set; }
     }
 }

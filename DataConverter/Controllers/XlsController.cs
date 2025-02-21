@@ -16,13 +16,13 @@ namespace DataConverter.Controllers
 
         // GET: XlsController/sql
         [HttpGet]
-        [Route("XlsController/Base64")]
-        public ActionResult GetSql([FromForm] FileData file)
+        [Route("XlsController/Base64/{operation}")]
+        public ActionResult GetSql([FromForm] FileData file,string operation)
         {
             try
             {
                var reader =new ReaderXls(file);
-                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql());
+                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql(operation));
 
                 var metadata = new
                 {
@@ -47,13 +47,13 @@ namespace DataConverter.Controllers
         }
         // GET: XlsController/text
         [HttpGet]
-        [Route("XlsController/text")]
-        public ActionResult GetText([FromForm] FileData file)
+        [Route("XlsController/text/{operation}")]
+        public ActionResult GetText([FromForm] FileData file, string operation)
         {
             try
             {
                 var reader = new ReaderXls(file);
-                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql());
+                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql(operation));
                 return File(fileBytes, "text/plain", "script.sql");
             }
             catch (Exception e)

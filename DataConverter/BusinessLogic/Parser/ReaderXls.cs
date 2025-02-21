@@ -15,9 +15,9 @@ namespace DataConverter.BusinessLogic.Parser
             this.file = file;
         }
         public ReaderXls(string name) { }   
-        public string GetSql()
+        public string GetSql(string operation)
         {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             var bytes = new byte[0];
             string contenido = string.Empty;
             using (var ms = new MemoryStream())
@@ -40,24 +40,40 @@ namespace DataConverter.BusinessLogic.Parser
                                 Dictionary<string, string> fieldValues = new Dictionary<string, string>();
                                 foreach (var field in json.FieldNames)
                                 {
-                                    var value = reader?.GetValue(field.Value).ToString() ?? "";
-                                    value = Regex.Replace(value.ToString(), @"\r\n?|\n", "").Trim();
-                                    value = value.ToString().Replace('"', '“').Trim();
-                                    value = value.ToString().Replace("'", "“").Trim();
+                                    var value = reader?.GetValue(field.Value)?.ToString();
+
+                                    if (value != null)
+                                    {
+                                        value = Regex.Replace(value.ToString(), @"\r\n?|\n", "").Trim();
+                                        value = value.ToString().Replace('"', '“').Trim();
+                                        value = value.ToString().Replace("'", "“").Trim();
+                                    }
                                     value = !string.IsNullOrEmpty(value) ? $"'{value}'" : "NULL";
                                     fieldValues.Add(field.Key, value);
-                                   
                                 }
-                                if (row > json.StartRow && fieldValues.Count()>0)
+                                if (row > json.StartRow && fieldValues.Count()== json.FieldNames.Count())
                                 {
                                     var values=string.Empty;
                                     var fields = string.Empty;
-                                    foreach (var value in fieldValues)
+                                    if (json?.FieldsToUpdate?.Count > 0)
                                     {
-                                        values.Concat(!string.IsNullOrEmpty(values) ? $",'{value.Value}'" : $"'{value.Value}'");
-                                        fields.Concat(!string.IsNullOrEmpty(fields) ? $",[{value.Key}]" :$"[{value.Key}]");
+                                        foreach (var field in json.FieldsToUpdate)
+                                        {
+
+                                            fields += !string.IsNullOrEmpty(fields) ? $",{field}={fieldValues[field]}" : $"{field}={fieldValues[field]}";
+
+                                        }
+                                        contenido = contenido + $"UPDATE [dbo].[{json.NameTable}] SET {fields} WHERE {json.FieldWhere}={fieldValues[json.FieldWhere]};\n";
+                                    }                                    
+                                    else
+                                    {
+                                        foreach (var value in fieldValues)
+                                        {
+                                            values += !string.IsNullOrEmpty(values) ? $",{value.Value}" : $"{value.Value}";
+                                            fields += !string.IsNullOrEmpty(fields) ? $",[{value.Key}]" : $"[{value.Key}]";
+                                        }
+                                        contenido = contenido + $"INSERT INTO [dbo].[{json.NameTable}]({fields}) values({values});\n";
                                     }
-                                    contenido = contenido + $"INSERT INTO [dbo].[{json.NameTable}]({fields}) values({values});\n";
                                 }
                                 row++;
                                 

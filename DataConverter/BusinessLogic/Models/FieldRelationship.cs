@@ -2,7 +2,7 @@
 {
     public class FieldRelationship
     {
-        public int Key { get; set; }
+        public string Key { get; set; }
 
         public int DataType { get; set; }
 
