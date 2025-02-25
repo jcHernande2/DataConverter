@@ -16,13 +16,21 @@ namespace DataConverter.Controllers
 
         // GET: XlsController/sql
         [HttpGet]
-        [Route("XlsController/Base64/{operation}")]
-        public ActionResult GetSql([FromForm] FileData file,string operation)
+        [Route("XlsController/Base64")]
+        [RequestSizeLimit(20485760)]
+        public ActionResult GetSql([FromForm] FileData file)
         {
             try
             {
                var reader =new ReaderXls(file);
-                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql(operation));
+                reader.ExtractData();
+                var dat = reader.GetEntries();
+                string entries = string.Empty;
+                foreach (var entry in dat)
+                {
+                    entries += entry.Value;
+                }
+                byte[] fileBytes = Encoding.UTF8.GetBytes(entries);
 
                 var metadata = new
                 {
@@ -47,14 +55,41 @@ namespace DataConverter.Controllers
         }
         // GET: XlsController/text
         [HttpGet]
-        [Route("XlsController/text/{operation}")]
-        public ActionResult GetText([FromForm] FileData file, string operation)
+        [Route("XlsController/text")]
+        [RequestSizeLimit(20485760)]
+        public ActionResult GetText([FromForm] FileData file)
         {
             try
             {
                 var reader = new ReaderXls(file);
-                byte[] fileBytes = Encoding.UTF8.GetBytes(reader.GetSql(operation));
+                reader.ExtractData();
+                var dat=reader.GetEntries();
+                string entries = string.Empty;
+                foreach (var entry in dat)
+                {
+                    entries += entry.Value;
+                }
+                byte[] fileBytes = Encoding.UTF8.GetBytes(entries);
                 return File(fileBytes, "text/plain", "script.sql");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return this.BadRequest();
+            }
+        }
+        // GET: XlsController/text
+        [HttpGet]
+        [Route("XlsController/zip")]
+        [RequestSizeLimit(50485760)]
+        public ActionResult GetZip([FromForm] FileData file)
+        {
+            try
+            {
+                var reader = new ReaderXls(file);
+                reader.ExtractData();
+                var bytesZip = reader.GetStreamZip();
+                return File(bytesZip, "application/zip", "scripts.zip");
             }
             catch (Exception e)
             {
