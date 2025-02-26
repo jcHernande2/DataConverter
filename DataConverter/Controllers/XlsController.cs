@@ -24,17 +24,10 @@ namespace DataConverter.Controllers
             {
                var reader =new ReaderXls(file);
                 reader.ExtractData();
-                var dat = reader.GetEntries();
-                string entries = string.Empty;
-                foreach (var entry in dat)
-                {
-                    entries += entry.Value;
-                }
-                byte[] fileBytes = Encoding.UTF8.GetBytes(entries);
-
+                var fileBytes = reader.GetStreamText();
                 var metadata = new
                 {
-                    NombreArchivo = "script.sql",
+                    NombreArchivo = $"{DateTime.Now:yyyyMMdd}_script.sql",
                     Tipo = "Texto plano",
                     FechaGeneracion = DateTime.Now
                 };
@@ -63,14 +56,8 @@ namespace DataConverter.Controllers
             {
                 var reader = new ReaderXls(file);
                 reader.ExtractData();
-                var dat=reader.GetEntries();
-                string entries = string.Empty;
-                foreach (var entry in dat)
-                {
-                    entries += entry.Value;
-                }
-                byte[] fileBytes = Encoding.UTF8.GetBytes(entries);
-                return File(fileBytes, "text/plain", "script.sql");
+                var fileBytes = reader.GetStreamText();
+                return File(fileBytes, "text/plain", $"{DateTime.Now:yyyyMMdd}_script.sql");
             }
             catch (Exception e)
             {

@@ -7,6 +7,7 @@ using DataConverter.BusinessLogic.Models;
 using DataConverter.Models.Request;
 using ExcelDataReader;
 using DataConverter.BusinessLogic.File;
+using System.Reflection.PortableExecutable;
 
 namespace DataConverter.BusinessLogic.Parser
 {
@@ -22,7 +23,6 @@ namespace DataConverter.BusinessLogic.Parser
             Entries= new Dictionary<string, string>();
 
         }
-        public ReaderXls(string name) { }   
         public void ExtractData()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -72,7 +72,7 @@ namespace DataConverter.BusinessLogic.Parser
                                 }
                                 if(blockRow >= json.RowMax)
                                 {
-                                    this.Entries.Add($"{json.NameTable}_{this.Entries.Count}", contenido);
+                                    this.Entries.Add($"{DateTime.Now:yyyyMMdd}_{json.NameTable}_{this.Entries.Count}.sql", contenido);
                                     contenido = string.Empty;
                                     blockRow = 0;
                                 }
@@ -87,7 +87,7 @@ namespace DataConverter.BusinessLogic.Parser
                         }
                         if (!string.IsNullOrEmpty(contenido))
                         {
-                            this.Entries.Add($"{json.NameTable}_{this.Entries.Count}", contenido);
+                            this.Entries.Add($"{DateTime.Now:yyyyMMdd}_{json.NameTable}_{this.Entries.Count}.sql", contenido);
                             break;
                         }
                     } while (reader.NextResult());
@@ -125,11 +125,16 @@ namespace DataConverter.BusinessLogic.Parser
             zipFile.AddEntries(this.Entries);
             return zipFile.GetBytesZip();
         }
-        public Dictionary<string, string> GetEntries()
-        {
-            return this.Entries;
-        }
 
+        public byte[] GetStreamText()
+        {
+            string entries = string.Empty;
+            foreach (var entry in this.Entries)
+            {
+                entries += entry.Value;
+            }
+            return Encoding.UTF8.GetBytes(entries);
+        }
 
         private string MemoryStreamToText(MemoryStream memoryStream)
         {

@@ -30,7 +30,7 @@ namespace DataConverter.BusinessLogic.File
                             using (MemoryStream memoryStream = new MemoryStream(textBytes))
                             {
                                 // Crear la entrada ZIP
-                                ZipArchiveEntry entry = zipArchive.CreateEntry($"{data.Key}.txt", CompressionLevel.Optimal);
+                                ZipArchiveEntry entry = zipArchive.CreateEntry($"{data.Key}", CompressionLevel.Optimal);
 
                                 // Obtener el Stream de la entrada ZIP y copiar los datos
                                 using (Stream entryStream = entry.Open())
